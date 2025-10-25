@@ -100,9 +100,9 @@ class ShopTheLook {
 
   async openModal(card) {
     const lookData = card.dataset.lookProducts;
-    
+
     console.log('Opening modal with data:', lookData);
-    
+
     if (!lookData) {
       this.modalContent.innerHTML = '<p style="text-align: center; padding: 40px;">No products linked to this look yet.</p>';
       this.showModal();
@@ -115,20 +115,17 @@ class ShopTheLook {
       console.log('Parsed settings:', settings);
     } catch (e) {
       console.error('Error parsing look data:', e);
+      this.modalContent.innerHTML = '<p style="text-align: center; padding: 40px;">Error loading product data.</p>';
+      this.showModal();
       return;
     }
 
-    // Collect product handles/IDs
+    // Collect product handles - they should now be clean strings from Liquid
     const productHandles = [];
     for (let i = 1; i <= 5; i++) {
       const productHandle = settings['product_' + i];
-      if (productHandle) {
-        // Extract handle from the full product object or string
-        if (typeof productHandle === 'string') {
-          productHandles.push(productHandle);
-        } else if (productHandle && productHandle.handle) {
-          productHandles.push(productHandle.handle);
-        }
+      if (productHandle && typeof productHandle === 'string' && productHandle.trim() !== '') {
+        productHandles.push(productHandle.trim());
       }
     }
 
