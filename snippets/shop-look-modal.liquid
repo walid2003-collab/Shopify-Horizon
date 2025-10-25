@@ -1,0 +1,337 @@
+{% comment %}
+  Snippet: Shop Look Modal
+  Modal matching exact Figma design specifications
+  
+  Usage:
+  {% render 'shop-look-modal', section_id: section.id %}
+{% endcomment %}
+
+<div class="shop-look-modal-overlay" data-modal-overlay></div>
+
+<div class="shop-look-modal" data-modal>
+  <div class="shop-look-modal__header">
+    <h3 class="shop-look-modal__title">GET THE LOOK</h3>
+    <button class="shop-look-modal__close" data-modal-close aria-label="Close modal">
+      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M18 6L6 18M6 6L18 18" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>
+    </button>
+  </div>
+  
+  <div class="shop-look-modal__content" data-modal-content>
+    <!-- Products will be dynamically inserted here -->
+  </div>
+
+  <div class="shop-look-modal__footer">
+    <button class="shop-look-add-to-bag-all" data-add-all-to-bag>
+      ADD TO BAG
+    </button>
+  </div>
+</div>
+
+<div class="shop-look-toast" data-toast>Added to bag!</div>
+
+{% stylesheet %}
+  .shop-look-modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 9998;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+  }
+
+  .shop-look-modal-overlay.active {
+    opacity: 1;
+    visibility: visible;
+  }
+
+  .shop-look-modal {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%) scale(0.95);
+    width: 600px;
+    max-width: 95vw;
+    max-height: 90vh;
+    background-color: #FFFFFF;
+    border-radius: 16px;
+    z-index: 9999;
+    opacity: 0;
+    visibility: hidden;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+  }
+
+  .shop-look-modal.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translate(-50%, -50%) scale(1);
+  }
+
+  .shop-look-modal__header {
+    padding: 24px 24px 20px 24px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+    border-bottom: 1px solid #F0F0F0;
+  }
+
+  .shop-look-modal__title {
+    font-size: 16px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin: 0;
+    color: #000000;
+  }
+
+  .shop-look-modal__close {
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 32px;
+    height: 32px;
+    border-radius: 4px;
+    background-color: transparent;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+    color: #000000;
+  }
+
+  .shop-look-modal__close:hover {
+    background-color: #F5F5F5;
+  }
+
+  .shop-look-modal__content {
+    padding: 24px;
+    overflow-y: auto;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+  }
+
+  .shop-look-product {
+    display: flex;
+    gap: 20px;
+    align-items: flex-start;
+  }
+
+  .shop-look-product__image-wrapper {
+    position: relative;
+    width: 120px;
+    flex-shrink: 0;
+  }
+
+  .shop-look-product__image {
+    width: 120px;
+    height: 144px;
+    object-fit: cover;
+    border-radius: 8px;
+    background-color: #F5F5F5;
+  }
+
+  .shop-look-badge {
+    position: absolute;
+    top: 8px;
+    left: 8px;
+    background-color: #000000;
+    color: #ffffff;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  .shop-look-product__info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .shop-look-product__title {
+    font-size: 15px;
+    font-weight: 600;
+    line-height: 1.4;
+    color: #000000;
+    margin: 0;
+  }
+
+  .shop-look-product__price {
+    font-size: 14px;
+    font-weight: 600;
+    color: #000000;
+    margin: 0;
+  }
+
+  .shop-look-variant-selectors {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+
+  .shop-look-variant-selector {
+    position: relative;
+  }
+
+  .shop-look-variant-select {
+    width: 100%;
+    height: 44px;
+    padding: 0 40px 0 16px;
+    border: 1px solid #E0E0E0;
+    border-radius: 8px;
+    background-color: #FFFFFF;
+    font-size: 13px;
+    font-weight: 500;
+    color: #666666;
+    cursor: pointer;
+    appearance: none;
+    transition: all 0.2s ease;
+  }
+
+  .shop-look-variant-select:hover {
+    border-color: #CCCCCC;
+  }
+
+  .shop-look-variant-select:focus {
+    outline: none;
+    border-color: #5B7EF6;
+    box-shadow: 0 0 0 3px rgba(91, 126, 246, 0.1);
+  }
+
+  .shop-look-variant-select option {
+    color: #000000;
+    font-weight: 500;
+  }
+
+  .shop-look-variant-selector::after {
+    content: '';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 6px solid #666666;
+    pointer-events: none;
+  }
+
+  .shop-look-modal__footer {
+    padding: 20px 24px;
+    border-top: 1px solid #F0F0F0;
+    background-color: #FFFFFF;
+    border-radius: 0 0 16px 16px;
+  }
+
+  .shop-look-add-to-bag-all {
+    width: 100%;
+    height: 50px;
+    background: linear-gradient(135deg, #5B7EF6 0%, #4A6ADB 100%);
+    color: #FFFFFF;
+    border: none;
+    border-radius: 25px;
+    font-size: 14px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 12px rgba(91, 126, 246, 0.3);
+  }
+
+  .shop-look-add-to-bag-all:hover {
+    background: linear-gradient(135deg, #4A6ADB 0%, #3959CA 100%);
+    box-shadow: 0 6px 16px rgba(91, 126, 246, 0.4);
+    transform: translateY(-1px);
+  }
+
+  .shop-look-add-to-bag-all:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(91, 126, 246, 0.3);
+  }
+
+  .shop-look-add-to-bag-all:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  .shop-look-toast {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: #000000;
+    color: #ffffff;
+    padding: 16px 24px;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    z-index: 10000;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(20px);
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+  }
+
+  .shop-look-toast.active {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  @media screen and (max-width: 768px) {
+    .shop-look-modal {
+      width: 95vw;
+      max-height: 95vh;
+    }
+
+    .shop-look-modal__content {
+      padding: 16px;
+      gap: 20px;
+    }
+
+    .shop-look-product {
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .shop-look-product__image-wrapper {
+      width: 100%;
+    }
+
+    .shop-look-product__image {
+      width: 100%;
+      height: 200px;
+    }
+
+    .shop-look-modal__header {
+      padding: 20px 16px;
+    }
+
+    .shop-look-modal__footer {
+      padding: 16px;
+    }
+  }
+{% endstylesheet %}
