@@ -1,0 +1,340 @@
+{% comment %}
+  Section: Shop The Look
+  Horizontally scrollable carousel of curated looks with modal product display
+{% endcomment %}
+
+<div class="section-background color-{{ section.settings.color_scheme }}"></div>
+
+<div
+  class="
+    section
+    section--{{ section.settings.section_width }}
+    color-{{ section.settings.color_scheme }}
+    shop-the-look-section
+    spacing-style
+  "
+  style="{% render 'spacing-style', settings: section.settings %}"
+>
+  {% if section.settings.title != blank %}
+    <div class="shop-the-look__header">
+      <h2 class="shop-the-look__title">{{ section.settings.title }}</h2>
+    </div>
+  {% endif %}
+
+  <div class="shop-the-look__carousel-wrapper">
+    {% if section.settings.show_arrows %}
+      <button 
+        class="shop-the-look__arrow shop-the-look__arrow--left"
+        aria-label="Previous"
+        data-carousel-prev
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <button 
+        class="shop-the-look__arrow shop-the-look__arrow--right"
+        aria-label="Next"
+        data-carousel-next
+      >
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+        </svg>
+      </button>
+    {% endif %}
+
+    <div class="shop-the-look__carousel" data-carousel>
+      {% for block in section.blocks %}
+        <div 
+          class="shop-look-card" 
+          data-look-id="{{ block.id }}"
+          data-look-products='{{ block.settings | json | escape }}'
+          {{ block.shopify_attributes }}
+        >
+          <div class="shop-look-card__image-wrapper">
+            {% if block.settings.look_image %}
+              <img
+                src="{{ block.settings.look_image | image_url: width: 600 }}"
+                alt="{{ block.settings.look_image.alt | default: block.settings.influencer_handle | escape }}"
+                class="shop-look-card__image"
+                loading="lazy"
+                width="600"
+                height="750"
+              >
+            {% else %}
+              <div class="shop-look-card__image shop-look-card__placeholder">
+                {{ 'image' | placeholder_svg_tag }}
+              </div>
+            {% endif %}
+
+            <div 
+              class="shop-look-card__overlay" 
+              {% if block.settings.overlay_color != blank %}
+                style="background: {{ block.settings.overlay_color }};"
+              {% endif %}
+            ></div>
+
+            <div class="shop-look-card__content">
+              {% if block.settings.influencer_handle != blank %}
+                <div class="shop-look-card__handle">{{ block.settings.influencer_handle }}</div>
+              {% endif %}
+              
+              <button 
+                class="shop-look-card__button"
+                style="background-color: {{ block.settings.button_color }}; color: {{ block.settings.button_text_color }};"
+                data-open-modal="{{ block.id }}"
+              >
+                {{ block.settings.button_text | default: "GET THE LOOK" }}
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% render 'shop-look-modal', section_id: section.id %}
+</div>
+
+<script src="{{ 'shop-the-look.js' | asset_url }}" defer></script>
+
+{% stylesheet %}
+  .shop-the-look-section {
+    overflow: hidden;
+  }
+
+  .shop-the-look__header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .shop-the-look__title {
+    font-size: 32px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin: 0;
+  }
+
+  .shop-the-look__carousel-wrapper {
+    position: relative;
+  }
+
+  .shop-the-look__carousel {
+    display: flex;
+    gap: 20px;
+    overflow-x: auto;
+    scroll-behavior: smooth;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    padding: 10px 0;
+  }
+
+  .shop-the-look__carousel::-webkit-scrollbar {
+    display: none;
+  }
+
+  .shop-the-look__arrow {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    background-color: white;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+    transition: all 0.3s ease;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+
+  .shop-the-look__arrow:hover {
+    background-color: #f5f5f5;
+    transform: translateY(-50%) scale(1.1);
+  }
+
+  .shop-the-look__arrow svg {
+    width: 24px;
+    height: 24px;
+    stroke: currentColor;
+  }
+
+  .shop-the-look__arrow--left {
+    left: 10px;
+  }
+
+  .shop-the-look__arrow--right {
+    right: 10px;
+  }
+
+  @media screen and (max-width: 768px) {
+    .shop-the-look__title {
+      font-size: 24px;
+    }
+
+    .shop-the-look__arrow {
+      width: 40px;
+      height: 40px;
+    }
+
+    .shop-the-look__arrow svg {
+      width: 20px;
+      height: 20px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Shop The Look",
+  "tag": "section",
+  "class": "section-shop-the-look",
+  "blocks": [
+    {
+      "type": "shop-look-card",
+      "name": "Look",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "look_image",
+          "label": "Look Image"
+        },
+        {
+          "type": "text",
+          "id": "influencer_handle",
+          "label": "Influencer Handle",
+          "placeholder": "@username"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button Text",
+          "default": "GET THE LOOK"
+        },
+        {
+          "type": "color",
+          "id": "button_color",
+          "label": "Button Background",
+          "default": "#ffffff"
+        },
+        {
+          "type": "color",
+          "id": "button_text_color",
+          "label": "Button Text Color",
+          "default": "#000000"
+        },
+        {
+          "type": "color",
+          "id": "overlay_color",
+          "label": "Hover Overlay Color",
+          "default": "rgba(0, 0, 0, 0.3)"
+        },
+        {
+          "type": "product",
+          "id": "product_1",
+          "label": "Product 1"
+        },
+        {
+          "type": "product",
+          "id": "product_2",
+          "label": "Product 2"
+        },
+        {
+          "type": "product",
+          "id": "product_3",
+          "label": "Product 3"
+        },
+        {
+          "type": "product",
+          "id": "product_4",
+          "label": "Product 4"
+        },
+        {
+          "type": "product",
+          "id": "product_5",
+          "label": "Product 5"
+        }
+      ]
+    }
+  ],
+  "settings": [
+    {
+      "type": "text",
+      "id": "title",
+      "label": "Section Title",
+      "default": "SHOP THE LOOK"
+    },
+    {
+      "type": "checkbox",
+      "id": "show_arrows",
+      "label": "Show Navigation Arrows",
+      "default": true
+    },
+    {
+      "type": "select",
+      "id": "section_width",
+      "label": "Width",
+      "options": [
+        {
+          "value": "page-width",
+          "label": "Page"
+        },
+        {
+          "value": "full-width",
+          "label": "Full"
+        }
+      ],
+      "default": "page-width"
+    },
+    {
+      "type": "color_scheme",
+      "id": "color_scheme",
+      "label": "Color Scheme",
+      "default": "scheme-1"
+    },
+    {
+      "type": "range",
+      "id": "padding-block-start",
+      "label": "Top Padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    },
+    {
+      "type": "range",
+      "id": "padding-block-end",
+      "label": "Bottom Padding",
+      "min": 0,
+      "max": 100,
+      "step": 1,
+      "unit": "px",
+      "default": 48
+    }
+  ],
+  "presets": [
+    {
+      "name": "Shop The Look",
+      "blocks": [
+        {
+          "type": "shop-look-card"
+        },
+        {
+          "type": "shop-look-card"
+        },
+        {
+          "type": "shop-look-card"
+        },
+        {
+          "type": "shop-look-card"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
