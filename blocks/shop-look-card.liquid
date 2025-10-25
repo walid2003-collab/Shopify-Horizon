@@ -1,0 +1,182 @@
+{% comment %}
+  Block: Shop Look Card
+  Individual look card with image, handle, and CTA button
+  
+  This block is rendered via content_for in the shop-the-look section
+  and has access to block.settings automatically
+{% endcomment %}
+
+{% assign block_settings = block.settings %}
+
+<div 
+  class="shop-look-card" 
+  data-look-id="{{ block.id }}"
+  data-look-products='{{ block_settings | json | escape }}'
+  {{ block.shopify_attributes }}
+>
+  <div class="shop-look-card__image-wrapper">
+    {% if block_settings.look_image %}
+      <img
+        src="{{ block_settings.look_image | image_url: width: 600 }}"
+        alt="{{ block_settings.look_image.alt | default: block_settings.influencer_handle | escape }}"
+        class="shop-look-card__image"
+        loading="lazy"
+        width="400"
+        height="500"
+      >
+    {% else %}
+      <div class="shop-look-card__image shop-look-card__placeholder">
+        {{ 'image' | placeholder_svg_tag }}
+      </div>
+    {% endif %}
+
+    <div 
+      class="shop-look-card__overlay" 
+      {% if block_settings.overlay_color != blank %}
+        style="background: {{ block_settings.overlay_color }};"
+      {% endif %}
+    ></div>
+
+    <div class="shop-look-card__content">
+      {% if block_settings.influencer_handle != blank %}
+        <div class="shop-look-card__handle">{{ block_settings.influencer_handle }}</div>
+      {% endif %}
+      
+      <button 
+        class="shop-look-card__button"
+        style="background-color: {{ block_settings.button_color }}; color: {{ block_settings.button_text_color }};"
+        data-open-modal="{{ block.id }}"
+      >
+        {{ block_settings.button_text | default: "GET THE LOOK" }}
+      </button>
+    </div>
+  </div>
+</div>
+
+{% stylesheet %}
+  .shop-look-card {
+    flex: 0 0 calc(25% - 15px);
+    min-width: 280px;
+    position: relative;
+    border-radius: 0px;
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform 0.3s ease;
+  }
+
+  .shop-look-card:hover {
+    transform: translateY(-5px);
+  }
+
+  .shop-look-card__image-wrapper {
+    position: relative;
+    width: 100%;
+    padding-bottom: 125%;
+    overflow: hidden;
+    border-radius: 0px;
+  }
+
+  .shop-look-card__image {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+  }
+
+  .shop-look-card:hover .shop-look-card__image {
+    transform: scale(1.05);
+  }
+
+  .shop-look-card__placeholder {
+    background-color: #f5f5f5;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .shop-look-card__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(to bottom, transparent 50%, rgba(0, 0, 0, 0.6) 100%);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+
+  .shop-look-card:hover .shop-look-card__overlay {
+    opacity: 1;
+  }
+
+  .shop-look-card__content {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 20px;
+    z-index: 2;
+  }
+
+  .shop-look-card__handle {
+    font-size: 14px;
+    color: #ffffff;
+    margin-bottom: 10px;
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+  }
+
+  .shop-look-card:hover .shop-look-card__handle {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .shop-look-card__button {
+    display: inline-block;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 50px;
+    font-size: 14px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  .shop-look-card:hover .shop-look-card__button {
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .shop-look-card__button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+  }
+
+  @media screen and (max-width: 1024px) {
+    .shop-look-card {
+      flex: 0 0 calc(50% - 10px);
+    }
+  }
+
+  @media screen and (max-width: 768px) {
+    .shop-look-card {
+      flex: 0 0 calc(100% - 20px);
+      min-width: 250px;
+    }
+  }
+{% endstylesheet %}
+
+{% schema %}
+{
+  "name": "Look Card",
+  "tag": null
+}
+{% endschema %}
